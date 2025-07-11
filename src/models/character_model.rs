@@ -8,11 +8,11 @@ pub struct CharacterModel {
     pub specie_id: i64,
     pub profession_id: i64,
     pub name: String,
-    pub level: u32,
-    pub experience: u32,
-    pub stats: String,
-    pub skills: String,
-    pub effects: String
+    pub level: Option<i64>,
+    pub experience: Option<i64>,
+    pub stats: Option<String>,
+    pub skills: Option<String>,
+    pub effects: Option<String>
 }
 
 impl From<web::Json<CharacterModel>> for CharacterModel {
