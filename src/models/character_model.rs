@@ -56,14 +56,17 @@ pub struct CharacterFull {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct CharacterStats {
-    strength: u16,
-    db: u16,
-    constitution: u16,
-    natual_armour: u16,
-    dexterity: u16,
-    wisdom: u16,
-    resolve: u16,
-    movement: u16,
+    strength: i16,
+    db: i16,
+    constitution: i16,
+    natual_armour: i16,
+    dexterity: i16,
+    wisdom: i16,
+    resolve: i16,
+    movement: i16,
+    hp: i16,
+    weapon_class1: i16,
+    weapon_class2: i16,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -79,6 +82,18 @@ pub struct CharacterSkills {
     foraging: i16,
     prayers: i16,
     arcane_arts: i16,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Weapon {
+    name: String,
+    slot: String,
+    dmg: i16,
+    wclass: String,
+    encumbrance: i16,
+    special: String,
+    tot_dmg: i16,
+    durability: i16,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
