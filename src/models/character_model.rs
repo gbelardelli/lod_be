@@ -1,6 +1,20 @@
 use actix_web::web;
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, sqlx::FromRow)]
+pub struct GameCharacterRow {
+    pub id: i64,
+    pub player_id: i64,
+    pub specie_id: i64,
+    pub profession_id: i64,
+    pub name: String,
+    pub level: Option<i64>,
+    pub experience: Option<i64>,
+    pub stats: Option<String>,
+    pub skills: Option<String>,
+    pub effects: Option<String>,
+}
+
 #[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
 pub struct CharacterModel {
     pub id: i64,
@@ -11,7 +25,7 @@ pub struct CharacterModel {
     pub level: Option<i64>,
     pub experience: Option<i64>,
     pub stats: Option<String>,
-    pub skills: Option<String>,
+    pub skills: Option<CharacterSkills>,
     pub effects: Option<String>
 }
 
@@ -54,17 +68,17 @@ pub struct CharacterStats {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct CharacterSkills {
-    cs: u16,
-    rs: u16,
-    dodge: u16,
-    pick_locks: u16,
-    barter: u16,
-    heal: u16,
-    alchemy: u16,
-    perception: u16,
-    foraging: u16,
-    prayers: u16,
-    arcane_arts: u16,
+    cs: i16,
+    rs: i16,
+    dodge: i16,
+    pick_locks: i16,
+    barter: i16,
+    heal: i16,
+    alchemy: i16,
+    perception: i16,
+    foraging: i16,
+    prayers: i16,
+    arcane_arts: i16,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
