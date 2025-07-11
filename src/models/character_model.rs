@@ -2,11 +2,11 @@ use actix_web::web;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
-pub struct GameCharacter {
-    pub id: u32,
-    pub player_id: u32,
-    pub specie_id: u32,
-    pub profession_id: u32,
+pub struct CharacterModel {
+    pub id: i64,
+    pub player_id: i64,
+    pub specie_id: i64,
+    pub profession_id: i64,
     pub name: String,
     pub level: u32,
     pub experience: u32,
@@ -15,10 +15,29 @@ pub struct GameCharacter {
     pub effects: String
 }
 
-impl From<web::Json<GameCharacter>> for GameCharacter {
-    fn from(value: web::Json<GameCharacter>) -> Self {
+impl From<web::Json<CharacterModel>> for CharacterModel {
+    fn from(value: web::Json<CharacterModel>) -> Self {
         value.0
     }
+}
+
+#[derive(Deserialize, Serialize, sqlx::FromRow)]
+pub struct NewCharacter {
+    pub player_id: i64,
+    pub specie_id: i64,
+    pub profession_id: i64,
+    pub name: String,
+}
+
+#[derive(Deserialize, Serialize, sqlx::FromRow)]
+pub struct CharacterFull {
+    pub id: i64,
+    pub player: String,
+    pub specie: String,
+    pub profession: String,
+    pub name: String,
+    pub level: u32,
+    pub experience: u32,    
 }
 
 #[derive(Debug, Deserialize, Serialize)]

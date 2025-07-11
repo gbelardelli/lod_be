@@ -1,41 +1,51 @@
+CREATE TABLE character_species (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(32),
+    description TEXT,
+    notes TEXT,
+    start_stats TEXT
+);
+
+CREATE TABLE character_profession (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(32),
+    description TEXT,
+    start_gear TEXT,
+    notes TEXT,
+    start_stats TEXT
+);
 
 CREATE TABLE player (
     id INTEGER PRIMARY KEY,
-    player_name VARCHAR NOT NULL,
-    color INTEGER
+    name VARCHAR NOT NULL,
+    color INTEGER NOT NULL CHECK (color >= 0),
+    roles INTEGER NOT NULL CHECK (roles >= 0),
+    password VARCHAR NOT NULL
 );
 
 CREATE TABLE game_character (
     id INTEGER PRIMARY KEY,
-    player_id INTEGER NOT NULL,
+    player_id INT NOT NULL,
     specie_id INT NOT NULL,
     profession_id INT NOT NULL,
     name TEXT NOT NULL,
     level INT DEFAULT 1,
     experience INT DEFAULT 0,
-    stats TEXT NOT NULL,      -- CharacterStats
-    skills TEXT NOT NULL,     -- CharacterSkills
-    effects TEXT NOT NULL,    -- GenericGameEffect
+    stats TEXT,      -- CharacterStats
+    skills TEXT,     -- CharacterSkills
+    effects TEXT,    -- GenericGameEffect
 
     FOREIGN KEY(player_id) REFERENCES player(id),
     FOREIGN KEY(specie_id) REFERENCES character_species(id),
     FOREIGN KEY(profession_id) REFERENCES character_profession(id)
 );
 
-CREATE TABLE character_species (
-    id INTEGER PRIMARY KEY,
-    name INTEGER
-);
 
-CREATE TABLE character_profession (
-    id INTEGER PRIMARY KEY,
-    name INTEGER
-);
 
 CREATE TABLE game_character_session (
     game_character_id INTEGER NOT NULL,
     game_session_id INTEGER NOT NULL,
-    session_stats TEXT NOT NULL,
+    session_stats TEXT,
 
     PRIMARY KEY(game_character_id, game_session_id)
 );

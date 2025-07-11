@@ -1,3 +1,4 @@
 
-pub mod game_session_db;
-pub mod game_character_db;
+pub mod session_db;
+pub mod character_db;
+pub mod player_db;

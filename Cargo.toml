@@ -4,10 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-actix-session = "0"
+actix-session = { version = "0.10", features = ["cookie-session"] }
 actix-web = "4"
 actix-files = "0"
 actix-rt = "2.7.0"
+actix-identity = "0.5"
 dotenvy = "0"
 env_logger = "0"
 log = "0"
