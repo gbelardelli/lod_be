@@ -28,7 +28,7 @@ pub struct CharacterModel {
     pub experience: Option<i64>,
     pub condition: Option<String>,
     pub comment: Option<String>,
-    pub stats: Option<String>,
+    pub stats: Option<CharacterStats>,
     pub skills: Option<CharacterSkills>,
     pub effects: Option<String>
 }

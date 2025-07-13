@@ -1,5 +1,5 @@
 use sqlx::SqlitePool;
-use crate::models::character_model::{CharacterModel, CharacterSkills, GameCharacterRow, NewCharacter};
+use crate::models::character_model::{CharacterModel, CharacterSkills, CharacterStats, GameCharacterRow, NewCharacter};
 
 pub async fn create_character(pool: &SqlitePool, character: NewCharacter) -> Result<i64, sqlx::Error> {
     let rec = sqlx::query!(
@@ -23,7 +23,10 @@ pub async fn get_all_characters(pool: &SqlitePool) -> Result<Vec<CharacterModel>
     let rows = sqlx::query_as!(
         GameCharacterRow,
         r#"
-        SELECT *
+        SELECT id, player_id, specie_id,
+            profession_id, name, level,
+            experience, condition, comment,
+            stats, skills, effects
         FROM game_character
         "#
     )
@@ -33,9 +36,9 @@ pub async fn get_all_characters(pool: &SqlitePool) -> Result<Vec<CharacterModel>
     let characters = rows
         .into_iter()
         .map(|row| {
-            /*let stats = row.stats
+            let stats = row.stats
                 .as_ref()
-                .and_then(|s| serde_json::from_str::<CharacterStats>(s).ok());*/
+                .and_then(|s| serde_json::from_str::<CharacterStats>(s).ok());
 
             let skills = row.skills
                 .as_ref()
@@ -55,7 +58,7 @@ pub async fn get_all_characters(pool: &SqlitePool) -> Result<Vec<CharacterModel>
                 experience: row.experience,
                 condition: row.condition,
                 comment: row.comment,
-                stats: row.stats,
+                stats,
                 skills,
                 effects: row.effects,
             }
@@ -104,6 +107,10 @@ pub async fn update_character(pool: &SqlitePool, id: i64, character: CharacterMo
     let skills_json = serde_json::to_string(&character.skills).map_err(|e| {
         sqlx::Error::Decode(Box::new(e))
     })?;
+
+    let stats_json = serde_json::to_string(&character.stats).map_err(|e| {
+        sqlx::Error::Decode(Box::new(e))
+    })?;
     sqlx::query(
         "UPDATE game_character
          SET name = ?, level = ?, experience = ?, stats = ?, skills = ?, effects = ?
@@ -112,7 +119,7 @@ pub async fn update_character(pool: &SqlitePool, id: i64, character: CharacterMo
     .bind(&character.name)
     .bind(character.level)
     .bind(character.experience)
-    .bind(&character.stats)
+    .bind(&stats_json)
     .bind(&skills_json)
     .bind(&character.effects)
     .bind(id)
