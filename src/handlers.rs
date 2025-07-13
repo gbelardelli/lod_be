@@ -6,6 +6,9 @@ pub mod player_handler;
 #[cfg(test)]
 pub mod session_tests;
 
+#[cfg(test)]
+pub mod character_tests;
+
 use actix_web::web;
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
