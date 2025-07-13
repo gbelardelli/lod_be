@@ -31,6 +31,8 @@ CREATE TABLE game_character (
     name TEXT NOT NULL,
     level INT DEFAULT 1,
     experience INT DEFAULT 0,
+    condition TEXT,
+    comment TEXT,
     stats TEXT,      -- CharacterStats
     skills TEXT,     -- CharacterSkills
     effects TEXT,    -- GenericGameEffect
@@ -56,4 +58,16 @@ CREATE TABLE character_notes (
     note TEXT, -- Il background va qui
 
     FOREIGN KEY(character_id) REFERENCES game_character(id)
+);
+
+CREATE TABLE weapon (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    damage TEXT NOT NULL DEFAULT '',
+    encumbrance SMALLINT NOT NULL DEFAULT 0,
+    class SMALLINT NOT NULL DEFAULT 0,
+    special TEXT,
+    cost INTEGER NOT NULL,
+    availability SMALLINT NOT NULL,
+    reload SMALLINT NOT NULL DEFAULT 0
 );

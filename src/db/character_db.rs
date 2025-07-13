@@ -23,7 +23,7 @@ pub async fn get_all_characters(pool: &SqlitePool) -> Result<Vec<CharacterModel>
     let rows = sqlx::query_as!(
         GameCharacterRow,
         r#"
-        SELECT id, player_id, specie_id, profession_id, name, level, experience, stats, skills, effects
+        SELECT *
         FROM game_character
         "#
     )
@@ -53,6 +53,8 @@ pub async fn get_all_characters(pool: &SqlitePool) -> Result<Vec<CharacterModel>
                 name: row.name,
                 level: row.level,
                 experience: row.experience,
+                condition: row.condition,
+                comment: row.comment,
                 stats: row.stats,
                 skills,
                 effects: row.effects,
@@ -66,10 +68,7 @@ pub async fn get_all_characters(pool: &SqlitePool) -> Result<Vec<CharacterModel>
 pub async fn get_character_by_id(pool: &SqlitePool, id: i64) -> Result<Option<CharacterModel>, sqlx::Error> {
     let row = sqlx::query!(
         r#"
-        SELECT
-            id, player_id, specie_id, profession_id,
-            name, level, experience,
-            stats, skills, effects
+        SELECT *
         FROM game_character WHERE id = ?
         "#,
         id
@@ -93,6 +92,8 @@ pub async fn get_character_by_id(pool: &SqlitePool, id: i64) -> Result<Option<Ch
         name: row.name,
         level: row.level,
         experience: row.experience,
+        condition: row.condition,
+        comment: row.comment,
         stats: row.stats.and_then(|s| serde_json::from_str(&s).ok()),
         skills: row.skills.and_then(|s| serde_json::from_str(&s).ok()),
         effects: row.effects.and_then(|s| serde_json::from_str(&s).ok()),
