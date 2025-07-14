@@ -81,17 +81,17 @@ pub struct CharacterStats {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct CharacterSkills {
-    cs: i16,
-    rs: i16,
-    dodge: i16,
-    pick_locks: i16,
-    barter: i16,
-    heal: i16,
-    alchemy: i16,
-    perception: i16,
-    foraging: i16,
-    prayers: i16,
-    arcane_arts: i16,
+    pub cs: i16,
+    pub rs: i16,
+    pub dodge: i16,
+    pub pick_locks: i16,
+    pub barter: i16,
+    pub heal: i16,
+    pub alchemy: i16,
+    pub perception: i16,
+    pub foraging: i16,
+    pub prayers: i16,
+    pub arcane_arts: i16,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -124,7 +124,6 @@ pub struct Gear {
     legs: Vec<Armour>,
     quick: Vec<Armour>,
 }
-
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Perk {
