@@ -20,6 +20,17 @@ pub async fn create_player(pool: &SqlitePool, player: PlayerModel) -> Result<i64
     Ok(rec.id)
 }
 
+pub async fn get_player_login(pool: &SqlitePool, username: &String) -> Result<Option<PlayerModel>, sqlx::Error> {
+    let player = sqlx::query_as::<_, PlayerModel>(
+        r#"SELECT id, name, color, roles, password FROM player WHERE name = ?"#
+    )
+    .bind(username)
+    .fetch_optional(pool)
+    .await?;
+
+    Ok(player)
+}
+
 pub async fn get_all_players(pool: &SqlitePool) -> Result<Vec<PlayerData>, sqlx::Error> {
     let rows = sqlx::query_as!(
         PlayerData,
@@ -35,14 +46,14 @@ pub async fn get_all_players(pool: &SqlitePool) -> Result<Vec<PlayerData>, sqlx:
 }
 
 pub async fn get_player_by_id(pool: &SqlitePool, id: i64) -> Result<Option<PlayerData>, sqlx::Error> {
-    let session = sqlx::query_as::<_, PlayerData>(
+    let player = sqlx::query_as::<_, PlayerData>(
         r#"SELECT id, name, color, roles FROM player WHERE id = ?"#
     )
     .bind(id)
     .fetch_optional(pool)
     .await?;
 
-    Ok(session)
+    Ok(player)
 }
 
 pub async fn update_player(pool: &SqlitePool, id: i64, player: PlayerData) -> Result<(), sqlx::Error> {

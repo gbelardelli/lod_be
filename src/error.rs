@@ -14,6 +14,7 @@ pub enum AppError {
     DbError(sqlx::Error),
     BadRequest(String),
     Internal(String),
+    Unauthorized(String),
 }
 
 impl fmt::Display for AppError {
@@ -23,6 +24,7 @@ impl fmt::Display for AppError {
             AppError::DbError(err) => write!(f, "Database error: {}", err),
             AppError::BadRequest(msg) => write!(f, "Bad Request: {}", msg),
             AppError::Internal(msg) => write!(f, "Internal Error: {}", msg),
+            AppError::Unauthorized(msg) => write!(f, "Unauthorized Error: {}", msg),
         }
     }
 }
@@ -46,6 +48,10 @@ impl ResponseError for AppError {
                 error: "internal".to_string(),
                 message: msg.clone(),
             },
+            AppError::Unauthorized(msg) => ErrorResponse {
+                error: "unauthorized".to_string(),
+                message: msg.clone(),
+            },            
         };
 
         let status_code = match self {
@@ -53,6 +59,7 @@ impl ResponseError for AppError {
             AppError::BadRequest(_) => actix_web::http::StatusCode::BAD_REQUEST,
             AppError::DbError(_) => actix_web::http::StatusCode::INTERNAL_SERVER_ERROR,
             AppError::Internal(_) => actix_web::http::StatusCode::INTERNAL_SERVER_ERROR,
+            AppError::Unauthorized(_) => actix_web::http::StatusCode::UNAUTHORIZED,
         };
 
         HttpResponse::build(status_code).json(error_body)

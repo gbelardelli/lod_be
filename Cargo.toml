@@ -8,7 +8,9 @@ actix-session = { version = "0.10", features = ["cookie-session"] }
 actix-web = "4"
 actix-files = "0"
 actix-rt = "2.7.0"
-actix-identity = "0.5"
+actix-identity = "0.8"
+actix-cors = "0.7"
+
 dotenvy = "0"
 env_logger = "0"
 log = "0"

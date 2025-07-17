@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login e Giocatori</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form id="login-form">
+        <label>Username: <input type="text" id="username" required></label><br>
+        <label>Password: <input type="password" id="password" required></label><br>
+        <button type="submit">Login</button>
+    </form>
+
+    <button id="logout-button">Logout</button>
+
+    <h2>Giocatori</h2>
+    <button id="load-players">Carica Giocatori</button>
+    <pre id="players-output"></pre>
+
+    <script>
+        const backendBase = "http://localhost:8080";
+
+        const loginForm = document.getElementById('login-form');
+        const logoutButton = document.getElementById('logout-button');
+        const playersOutput = document.getElementById('players-output');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const res = await fetch(`${backendBase}/api/players/login`, {
+            //const res = await fetch(`${backendBase}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include', // important for cookies/session
+                body: JSON.stringify({ username, password })
+            });
+
+            if (res.ok) {
+                alert('Login effettuato!');
+            } else {
+                const error = await res.text();
+                alert('Login fallito: ' + error);
+            }
+        });
+
+        logoutButton.addEventListener('click', async () => {
+            const res = await fetch(`${backendBase}/logout`, {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (res.ok) {
+                alert('Logout effettuato!');
+                playersOutput.textContent = '';
+            } else {
+                alert('Errore durante il logout.');
+            }
+        });
+
+        document.getElementById('load-players').addEventListener('click', async () => {
+            const res = await fetch(`${backendBase}/api/players`, {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                playersOutput.textContent = JSON.stringify(data, null, 2);
+            } else {
+                playersOutput.textContent = 'Errore nel caricamento (forse non sei autenticato).';
+            }
+        });
+    </script>
+</body>
+</html>

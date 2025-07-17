@@ -1,4 +1,9 @@
+use actix_identity::IdentityExt;
+use actix_identity::Identity;
+use actix_web::HttpMessage;
+use actix_web::HttpRequest;
 use actix_web::{web, HttpResponse};
+use serde::Deserialize;
 use sqlx::SqlitePool;
 
 use crate::{db::player_db, error::AppError, models::player_model::{PlayerData, PlayerModel}};
@@ -7,10 +12,38 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg
         .route("/players", web::post().to(create_player))
         .route("/players", web::get().to(get_all_players))
+        .route("/players/login", web::post().to(player_login))
         .route("/players/{id}", web::get().to(get_player_by_id))
         .route("/players/{id}", web::put().to(update_player))
         .route("/players/pwdroles/{id}", web::put().to(update_player_pwd_roles))
         .route("/players/{id}", web::delete().to(delete_player));
+}
+
+#[derive(Deserialize)]
+pub struct LoginRequest {
+    pub username: String,
+    pub password: String,
+}
+
+pub async fn player_login( req: HttpRequest, form: web::Json<LoginRequest>, db_pool: web::Data<SqlitePool>, ) -> Result<HttpResponse, AppError> {
+    match player_db::get_player_login(&db_pool, &form.username).await {
+        Ok(player) => {
+            if player.as_ref().is_some_and(|pl| pl.password == form.password) {
+                let player=player.unwrap();
+                
+                match Identity::login(&req.extensions(), player.name.clone()) {
+                    Ok(_) => println!("login ok"),
+                    Err(ko) => println!("login ko {:?}",ko),
+                };
+                Ok(HttpResponse::Ok().json(player))    
+            }else{
+                Err(AppError::Unauthorized("Invalid credentials".to_owned()))
+            }
+        },
+        Err(_) => {
+            Err(AppError::Unauthorized("Invalid credentials".to_owned()))
+        }
+    }
 }
 
 async fn create_player(db_pool: web::Data<SqlitePool>, new_player: web::Json<PlayerModel>,) -> Result<HttpResponse, AppError> {
@@ -23,11 +56,14 @@ async fn create_player(db_pool: web::Data<SqlitePool>, new_player: web::Json<Pla
     }
 }
 
-async fn get_all_players(db_pool: web::Data<SqlitePool>,) -> Result<HttpResponse, AppError> {
-    let players = player_db::get_all_players(db_pool.get_ref()).await
-        .map_err(|e| AppError::DbError(e))?;
+async fn get_all_players(db_pool: web::Data<SqlitePool>, id: Option<Identity>) -> Result<HttpResponse, AppError> {
+    if let Some(_id) = id {
+        let players = player_db::get_all_players(db_pool.get_ref()).await
+            .map_err(|e| AppError::DbError(e))?;
 
-    Ok(HttpResponse::Ok().json(players))
+        return Ok(HttpResponse::Ok().json(players));
+    }
+    Err(AppError::Unauthorized("You must be logged on!".to_owned()))
 }
 
 async fn get_player_by_id(db_pool: web::Data<SqlitePool>, path: web::Path<i64>,) -> Result<HttpResponse, AppError> {
