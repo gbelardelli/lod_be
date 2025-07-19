@@ -13,6 +13,7 @@ mod error;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     let db_pool = SqlitePool::connect("sqlite://lodapp.db").await.expect("Failed to connect to database");
     //sqlx::migrate!("./migrations").run(&db_pool).await.expect("Failed to run migrations");    
     let secret_key = Key::generate();
@@ -35,14 +36,15 @@ async fn main() -> std::io::Result<()> {
                 .build();            
 
         App::new()
+            .app_data(web::Data::new(db_pool.clone()))
             .wrap(identity_mw)
             .wrap(session_mw)
             .wrap(Logger::default())
-            .app_data(web::Data::new(db_pool.clone()))
             .wrap(cors)
             .configure(handlers::init_routes)
     })
     .bind(("127.0.0.1", 8080))?
+    .workers(2)
     .run()
     .await
 }
