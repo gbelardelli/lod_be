@@ -22,7 +22,7 @@ impl From<web::Json<PlayerModel>> for PlayerModel {
     }
 }
 
-#[derive(Deserialize,Serialize,sqlx::FromRow)]
+#[derive(Deserialize,Serialize,Clone,sqlx::FromRow)]
 pub struct PlayerData {
     pub id: i64,
     pub name: String,

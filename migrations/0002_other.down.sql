@@ -2,7 +2,7 @@ DROP TABLE player;
 
 DROP TABLE game_character;
 
-DROP TABLE character_species;
+DROP TABLE character_specie;
 
 DROP TABLE character_profession;
 

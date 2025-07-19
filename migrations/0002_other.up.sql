@@ -1,18 +1,18 @@
-CREATE TABLE character_species (
+CREATE TABLE character_specie (
     id INTEGER PRIMARY KEY,
-    name VARCHAR(32),
+    name VARCHAR NOT NULL,
     description TEXT,
     notes TEXT,
-    start_stats TEXT
+    start_stats TEXT NOT NULL
 );
 
 CREATE TABLE character_profession (
     id INTEGER PRIMARY KEY,
-    name VARCHAR(32),
+    name VARCHAR NOT NULL,
     description TEXT,
     start_gear TEXT,
     notes TEXT,
-    start_stats TEXT
+    start_stats TEXT NOT NULL
 );
 
 CREATE TABLE player (
@@ -38,7 +38,7 @@ CREATE TABLE game_character (
     effects TEXT,    -- GenericGameEffect
 
     FOREIGN KEY(player_id) REFERENCES player(id),
-    FOREIGN KEY(specie_id) REFERENCES character_species(id),
+    FOREIGN KEY(specie_id) REFERENCES character_specie(id),
     FOREIGN KEY(profession_id) REFERENCES character_profession(id)
 );
 

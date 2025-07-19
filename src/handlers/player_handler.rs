@@ -1,5 +1,6 @@
 use actix_identity::IdentityExt;
 use actix_identity::Identity;
+use actix_session::SessionExt;
 use actix_web::HttpMessage;
 use actix_web::HttpRequest;
 use actix_web::{web, HttpResponse};
@@ -25,17 +26,35 @@ pub struct LoginRequest {
     pub password: String,
 }
 
-pub async fn player_login( req: HttpRequest, form: web::Json<LoginRequest>, db_pool: web::Data<SqlitePool>, ) -> Result<HttpResponse, AppError> {
+pub async fn player_login( req: HttpRequest, form: web::Json<LoginRequest>, db_pool: web::Data<SqlitePool>, id: Option<Identity>, ) -> Result<HttpResponse, AppError> {
+    if let Some(_id) = id {
+        println!("session: {:?}",req.get_session().entries());
+        let player=req.get_session().get::<PlayerData>("player");
+        if player.is_ok() {
+            return Ok(HttpResponse::Ok().json(player.unwrap()));
+        }else{
+            return Err(AppError::Unauthorized("Invalid credentials".to_owned()));
+        }
+    }
     match player_db::get_player_login(&db_pool, &form.username).await {
         Ok(player) => {
             if player.as_ref().is_some_and(|pl| pl.password == form.password) {
                 let player=player.unwrap();
-                
-                match Identity::login(&req.extensions(), player.name.clone()) {
+                let player_id=player.id.to_string();
+
+                match Identity::login(&req.extensions(), player_id) {
                     Ok(_) => println!("login ok"),
                     Err(ko) => println!("login ko {:?}",ko),
                 };
-                Ok(HttpResponse::Ok().json(player))    
+                let resp: PlayerData = PlayerData {
+                    id: player.id,
+                    name: player.name.clone(),
+                    color: player.color,
+                    roles: player.roles,
+                };
+                let _ = req.get_session().insert("player", resp.clone());
+
+                Ok(HttpResponse::Ok().json(resp))
             }else{
                 Err(AppError::Unauthorized("Invalid credentials".to_owned()))
             }

@@ -20,6 +20,7 @@
 
     <script>
         const backendBase = "http://localhost:8080";
+        let playerId=0;
 
         const loginForm = document.getElementById('login-form');
         const logoutButton = document.getElementById('logout-button');
@@ -40,7 +41,9 @@
             });
 
             if (res.ok) {
-                alert('Login effettuato!');
+                const data = await res.json(); // leggi il corpo come JSON
+                playerId=data.id;
+                alert('Login effettuato! '+playerId);
             } else {
                 const error = await res.text();
                 alert('Login fallito: ' + error);
