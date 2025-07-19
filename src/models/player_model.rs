@@ -10,6 +10,7 @@ pub enum Roles {
 #[derive(Debug, Deserialize, Serialize,sqlx::FromRow)]
 pub struct PlayerModel {
     pub id: i64,
+    pub username: String,
     pub name: String,
     pub color: i64,
     pub roles: i64,
@@ -25,6 +26,7 @@ impl From<web::Json<PlayerModel>> for PlayerModel {
 #[derive(Deserialize,Serialize,Clone,sqlx::FromRow)]
 pub struct PlayerData {
     pub id: i64,
+    pub username: String,
     pub name: String,
     pub color: i64,
     pub roles: i64,

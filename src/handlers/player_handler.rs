@@ -48,6 +48,7 @@ pub async fn player_login( req: HttpRequest, form: web::Json<LoginRequest>, db_p
                 };
                 let resp: PlayerData = PlayerData {
                     id: player.id,
+                    username: player.username.clone(),
                     name: player.name.clone(),
                     color: player.color,
                     roles: player.roles,

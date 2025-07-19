@@ -17,6 +17,7 @@ CREATE TABLE character_profession (
 
 CREATE TABLE player (
     id INTEGER PRIMARY KEY,
+    username VARCHAR NOT NULL UNIQUE,
     name VARCHAR NOT NULL,
     color INTEGER NOT NULL CHECK (color >= 0),
     roles INTEGER NOT NULL CHECK (roles >= 0),

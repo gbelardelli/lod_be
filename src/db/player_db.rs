@@ -5,10 +5,11 @@ use crate::models::player_model::{PlayerData, PlayerModel};
 pub async fn create_player(pool: &SqlitePool, player: PlayerModel) -> Result<i64, sqlx::Error> {
     let rec = sqlx::query!(
         r#"
-        INSERT INTO player (name, color, roles, password)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO player (username, name, color, roles, password)
+        VALUES (?, ?, ?, ?, ?)
         RETURNING id
         "#,
+        player.username,
         player.name,
         player.color,
         player.roles ,
@@ -22,7 +23,7 @@ pub async fn create_player(pool: &SqlitePool, player: PlayerModel) -> Result<i64
 
 pub async fn get_player_login(pool: &SqlitePool, username: &String) -> Result<Option<PlayerModel>, sqlx::Error> {
     let player = sqlx::query_as::<_, PlayerModel>(
-        r#"SELECT id, name, color, roles, password FROM player WHERE name = ?"#
+        r#"SELECT id, username, name, color, roles, password FROM player WHERE username = ?"#
     )
     .bind(username)
     .fetch_optional(pool)
@@ -35,7 +36,7 @@ pub async fn get_all_players(pool: &SqlitePool) -> Result<Vec<PlayerData>, sqlx:
     let rows = sqlx::query_as!(
         PlayerData,
         r#"
-        SELECT id, name, color, roles
+        SELECT id, username, name, color, roles
         FROM player
         "#
     )
@@ -47,7 +48,7 @@ pub async fn get_all_players(pool: &SqlitePool) -> Result<Vec<PlayerData>, sqlx:
 
 pub async fn get_player_by_id(pool: &SqlitePool, id: i64) -> Result<Option<PlayerData>, sqlx::Error> {
     let player = sqlx::query_as::<_, PlayerData>(
-        r#"SELECT id, name, color, roles FROM player WHERE id = ?"#
+        r#"SELECT id, username, name, color, roles FROM player WHERE id = ?"#
     )
     .bind(id)
     .fetch_optional(pool)
