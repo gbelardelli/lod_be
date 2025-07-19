@@ -57,11 +57,14 @@ pub async fn player_login( req: HttpRequest, form: web::Json<LoginRequest>, db_p
 
                 Ok(HttpResponse::Ok().json(resp))
             }else{
+                if player.is_none() {
+                    return Err(AppError::NotFound("Username invalid".to_owned()));
+                }
                 Err(AppError::Unauthorized("Invalid credentials".to_owned()))
             }
         },
-        Err(_) => {
-            Err(AppError::Unauthorized("Invalid credentials".to_owned()))
+        Err(err) => {
+            Err(AppError::Internal(err.to_string()))
         }
     }
 }
