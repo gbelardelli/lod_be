@@ -3,7 +3,7 @@ use std::time::Duration;
 use actix_cors::Cors;
 use actix_identity::IdentityMiddleware;
 use actix_session::{config::PersistentSession, storage::CookieSessionStore, SessionMiddleware};
-use actix_web::{cookie::Key, http, middleware::Logger, web, App, HttpServer};
+use actix_web::{cookie::{Key}, middleware::Logger, web, App, HttpServer};
 use sqlx::SqlitePool;
 
 mod models;
@@ -25,7 +25,7 @@ async fn main() -> std::io::Result<()> {
             SessionMiddleware::builder(CookieSessionStore::default(), secret_key.clone())
                 // disable secure cookie for local testing
                 .cookie_secure(false)
-                .cookie_name("porcodio".to_string())
+                .cookie_name("lodapp".to_string())
                 // Set a ttl for the cookie if the identity should live longer than the user session
                 .session_lifecycle(
                     PersistentSession::default().session_ttl(expiration.try_into().unwrap()),
