@@ -6,3 +6,4 @@ lodapp.db*
 .env
 
 start_*.sql
+cookies.txt

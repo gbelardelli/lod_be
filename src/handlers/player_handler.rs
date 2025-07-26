@@ -15,6 +15,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .route("/players", web::get().to(get_all_players))
         .route("/players/login", web::post().to(player_login))
         .route("/players/{id}", web::get().to(get_player_by_id))
+        .route("/players/{id}/sessions", web::get().to(get_player_sessions))
         .route("/players/{id}", web::put().to(update_player))
         .route("/players/pwdroles/{id}", web::put().to(update_player_pwd_roles))
         .route("/players/{id}", web::delete().to(delete_player));
@@ -92,6 +93,15 @@ async fn get_all_players(db_pool: web::Data<SqlitePool>, id: Option<Identity>) -
 async fn get_player_by_id(db_pool: web::Data<SqlitePool>, path: web::Path<i64>,) -> Result<HttpResponse, AppError> {
     let id = path.into_inner();
     match player_db::get_player_by_id(&db_pool, id).await {
+        Ok(Some(player)) => Ok(HttpResponse::Ok().json(player)),
+        Ok(None) => Err(AppError::NotFound(format!("Player with id {} not found", id))),
+        Err(e) => Err(AppError::DbError(e)),
+    }
+}
+
+async fn get_player_sessions(db_pool: web::Data<SqlitePool>, path: web::Path<i64>,) -> Result<HttpResponse, AppError> {
+    let id = path.into_inner();
+    match player_db::get_player_sessions(&db_pool, id).await {
         Ok(Some(session)) => Ok(HttpResponse::Ok().json(session)),
         Ok(None) => Err(AppError::NotFound(format!("Player with id {} not found", id))),
         Err(e) => Err(AppError::DbError(e)),

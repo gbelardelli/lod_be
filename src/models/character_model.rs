@@ -48,14 +48,14 @@ pub struct NewCharacter {
 }
 
 #[derive(Deserialize, Serialize, sqlx::FromRow)]
-pub struct CharacterFull {
+pub struct CharacterPlayerRow {
     pub id: i64,
     pub player: String,
     pub specie: String,
     pub profession: String,
     pub name: String,
-    pub level: u16,
-    pub experience: u32,    
+    pub level: i64,
+    pub experience: i64,    
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -153,12 +153,11 @@ pub struct GameCharacterPlayerLong {
     pub effects: String,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct GameCharacterPlayerShort {
-    pub player_name: String,
-    pub player_color: u32,
+    pub id: i64,
     pub specie: String,
     pub profession: String,
     pub name: String,
-    pub level: u32,
+    pub level: u16,
 }
