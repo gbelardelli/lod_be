@@ -4,10 +4,10 @@ use serde::{Deserialize, Serialize};
 pub enum Roles {
     ADMIN,
     SESSIONMGR,
-    PLAYER
+    PLAYER,
 }
 
-#[derive(Debug, Deserialize, Serialize,sqlx::FromRow)]
+#[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
 pub struct PlayerModel {
     pub id: i64,
     pub username: String,
@@ -23,7 +23,7 @@ impl From<web::Json<PlayerModel>> for PlayerModel {
     }
 }
 
-#[derive(Deserialize,Serialize,Clone,sqlx::FromRow)]
+#[derive(Deserialize, Serialize, Clone, sqlx::FromRow)]
 pub struct PlayerData {
     pub id: i64,
     pub username: String,

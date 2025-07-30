@@ -1,7 +1,12 @@
+use crate::models::character_model::{
+    CharacterModel, CharacterSkills, CharacterStats, GameCharacterRow, NewCharacter,
+};
 use sqlx::SqlitePool;
-use crate::models::character_model::{CharacterModel, CharacterSkills, CharacterStats, GameCharacterRow, NewCharacter};
 
-pub async fn create_character(pool: &SqlitePool, character: NewCharacter) -> Result<i64, sqlx::Error> {
+pub async fn create_character(
+    pool: &SqlitePool,
+    character: NewCharacter,
+) -> Result<i64, sqlx::Error> {
     let rec = sqlx::query!(
         r#"
         INSERT INTO game_character (player_id, specie_id, profession_id, name)
@@ -36,11 +41,13 @@ pub async fn get_all_characters(pool: &SqlitePool) -> Result<Vec<CharacterModel>
     let characters = rows
         .into_iter()
         .map(|row| {
-            let stats = row.stats
+            let stats = row
+                .stats
                 .as_ref()
                 .and_then(|s| serde_json::from_str::<CharacterStats>(s).ok());
 
-            let skills = row.skills
+            let skills = row
+                .skills
                 .as_ref()
                 .and_then(|s| serde_json::from_str::<CharacterSkills>(s).ok());
 
@@ -61,10 +68,13 @@ pub async fn get_all_characters(pool: &SqlitePool) -> Result<Vec<CharacterModel>
         })
         .collect();
 
-    Ok(characters)  
+    Ok(characters)
 }
 
-pub async fn get_character_by_id(pool: &SqlitePool, id: i64) -> Result<Option<CharacterModel>, sqlx::Error> {
+pub async fn get_character_by_id(
+    pool: &SqlitePool,
+    id: i64,
+) -> Result<Option<CharacterModel>, sqlx::Error> {
     let row = sqlx::query!(
         r#"
         SELECT id, player_id, specie_id,
@@ -76,7 +86,7 @@ pub async fn get_character_by_id(pool: &SqlitePool, id: i64) -> Result<Option<Ch
         id
     )
     .fetch_one(pool)
-    .await?;    
+    .await?;
 
     Ok(Some(CharacterModel {
         id: row.id,
@@ -94,18 +104,20 @@ pub async fn get_character_by_id(pool: &SqlitePool, id: i64) -> Result<Option<Ch
     }))
 }
 
-pub async fn update_character(pool: &SqlitePool, id: i64, character: CharacterModel) -> Result<(), sqlx::Error> {
-    let skills_json = serde_json::to_string(&character.skills).map_err(|e| {
-        sqlx::Error::Decode(Box::new(e))
-    })?;
+pub async fn update_character(
+    pool: &SqlitePool,
+    id: i64,
+    character: CharacterModel,
+) -> Result<(), sqlx::Error> {
+    let skills_json =
+        serde_json::to_string(&character.skills).map_err(|e| sqlx::Error::Decode(Box::new(e)))?;
 
-    let stats_json = serde_json::to_string(&character.stats).map_err(|e| {
-        sqlx::Error::Decode(Box::new(e))
-    })?;
+    let stats_json =
+        serde_json::to_string(&character.stats).map_err(|e| sqlx::Error::Decode(Box::new(e)))?;
     sqlx::query(
         "UPDATE game_character
          SET name = ?, level = ?, experience = ?, stats = ?, skills = ?, effects = ?
-         WHERE id = ?"
+         WHERE id = ?",
     )
     .bind(&character.name)
     .bind(character.level)

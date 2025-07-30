@@ -1,18 +1,21 @@
 use std::collections::HashMap;
 
+use crate::models::{
+    character_model::GameCharacterPlayerShort,
+    player_model::{PlayerData, PlayerModel},
+    session_model::SessionModel,
+};
 use actix_session::Session;
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
-use crate::models::{character_model::GameCharacterPlayerShort, player_model::{PlayerData, PlayerModel}, session_model::SessionModel};
 
-
-#[derive(Deserialize,Serialize)]
+#[derive(Deserialize, Serialize)]
 struct OpenedSessionInfo {
     session: SessionModel,
     character: Vec<GameCharacterPlayerShort>,
 }
 
-#[derive(Debug,sqlx::FromRow)]
+#[derive(Debug, sqlx::FromRow)]
 struct PlayerSessionInfoRow {
     session_id: i64,
     session_title: Option<String>,
@@ -28,12 +31,15 @@ struct PlayerSessionInfoRow {
     character_session_stats: Option<String>,
 }
 
-#[derive(Deserialize,Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct PlayerSessionsInfo {
     sessions: Vec<OpenedSessionInfo>,
 }
 
-pub async fn get_player_sessions(pool: &SqlitePool, id: i64) -> Result<Option<PlayerSessionsInfo>, sqlx::Error> {
+pub async fn get_player_sessions(
+    pool: &SqlitePool,
+    id: i64,
+) -> Result<Option<PlayerSessionsInfo>, sqlx::Error> {
     let rows = sqlx::query_as::<_, PlayerSessionInfoRow>(
         r#"
             SELECT
@@ -58,7 +64,7 @@ pub async fn get_player_sessions(pool: &SqlitePool, id: i64) -> Result<Option<Pl
             JOIN character_profession cp ON cp.id = gc.profession_id
             WHERE s.completed = 0 AND p.id=?
             ORDER BY s.id, p.id
-        "#
+        "#,
     )
     .bind(id)
     .fetch_all(pool)
@@ -78,15 +84,16 @@ pub async fn get_player_sessions(pool: &SqlitePool, id: i64) -> Result<Option<Pl
         sessions_map
             .entry(row.session_id)
             .and_modify(|entry| entry.character.push(character.clone()))
-            .or_insert_with(|| OpenedSessionInfo { 
-                session: SessionModel { 
+            .or_insert_with(|| OpenedSessionInfo {
+                session: SessionModel {
                     id: row.session_id,
                     description: row.session_title.unwrap_or_default(),
                     completed: 0,
                     date_start: row.session_start_date.unwrap_or_default(),
-                    last_date: Some(row.session_last_date.unwrap_or_default()), 
-                    session_data: row.session_data.unwrap_or(serde_json::json!({})), 
-                }, character: vec![character],
+                    last_date: Some(row.session_last_date.unwrap_or_default()),
+                    session_data: row.session_data.unwrap_or(serde_json::json!({})),
+                },
+                character: vec![character],
             });
     }
 
@@ -105,7 +112,7 @@ pub async fn create_player(pool: &SqlitePool, player: PlayerModel) -> Result<i64
         player.username,
         player.name,
         player.color,
-        player.roles ,
+        player.roles,
         player.password,
     )
     .fetch_one(pool)
@@ -114,9 +121,12 @@ pub async fn create_player(pool: &SqlitePool, player: PlayerModel) -> Result<i64
     Ok(rec.id)
 }
 
-pub async fn get_player_login(pool: &SqlitePool, username: &String) -> Result<Option<PlayerModel>, sqlx::Error> {
+pub async fn get_player_login(
+    pool: &SqlitePool,
+    username: &String,
+) -> Result<Option<PlayerModel>, sqlx::Error> {
     let player = sqlx::query_as::<_, PlayerModel>(
-        r#"SELECT id, username, name, color, roles, password FROM player WHERE username = ?"#
+        r#"SELECT id, username, name, color, roles, password FROM player WHERE username = ?"#,
     )
     .bind(username)
     .fetch_optional(pool)
@@ -139,9 +149,12 @@ pub async fn get_all_players(pool: &SqlitePool) -> Result<Vec<PlayerData>, sqlx:
     Ok(rows)
 }
 
-pub async fn get_player_by_id(pool: &SqlitePool, id: i64) -> Result<Option<PlayerData>, sqlx::Error> {
+pub async fn get_player_by_id(
+    pool: &SqlitePool,
+    id: i64,
+) -> Result<Option<PlayerData>, sqlx::Error> {
     let player = sqlx::query_as::<_, PlayerData>(
-        r#"SELECT id, username, name, color, roles FROM player WHERE id = ?"#
+        r#"SELECT id, username, name, color, roles FROM player WHERE id = ?"#,
     )
     .bind(id)
     .fetch_optional(pool)
@@ -150,11 +163,15 @@ pub async fn get_player_by_id(pool: &SqlitePool, id: i64) -> Result<Option<Playe
     Ok(player)
 }
 
-pub async fn update_player(pool: &SqlitePool, id: i64, player: PlayerData) -> Result<(), sqlx::Error> {
+pub async fn update_player(
+    pool: &SqlitePool,
+    id: i64,
+    player: PlayerData,
+) -> Result<(), sqlx::Error> {
     sqlx::query(
         "UPDATE player
          SET name = ?, color = ?
-         WHERE id = ?"
+         WHERE id = ?",
     )
     .bind(&player.name)
     .bind(player.color)
@@ -165,11 +182,15 @@ pub async fn update_player(pool: &SqlitePool, id: i64, player: PlayerData) -> Re
     Ok(())
 }
 
-pub async fn update_player_password(pool: &SqlitePool, id: i64, player: PlayerModel) -> Result<(), sqlx::Error> {
+pub async fn update_player_password(
+    pool: &SqlitePool,
+    id: i64,
+    player: PlayerModel,
+) -> Result<(), sqlx::Error> {
     sqlx::query(
         "UPDATE player
          SET password = ?, roles = ?
-         WHERE id = ?"
+         WHERE id = ?",
     )
     .bind(&player.password)
     .bind(player.roles)

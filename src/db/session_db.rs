@@ -1,7 +1,10 @@
-use sqlx::SqlitePool;
 use crate::models::session_model::{NewSessionData, SessionModel};
+use sqlx::SqlitePool;
 
-pub async fn create_session(pool: &SqlitePool, session: NewSessionData) -> Result<i64, sqlx::Error> {
+pub async fn create_session(
+    pool: &SqlitePool,
+    session: NewSessionData,
+) -> Result<i64, sqlx::Error> {
     let json_string = session.session_data.to_string();
 
     let rec = sqlx::query!(
@@ -35,7 +38,10 @@ pub async fn get_all_sessions(pool: &SqlitePool) -> Result<Vec<SessionModel>, sq
     Ok(rows)
 }
 
-pub async fn get_session_by_id(pool: &SqlitePool, id: i64) -> Result<Option<SessionModel>, sqlx::Error> {
+pub async fn get_session_by_id(
+    pool: &SqlitePool,
+    id: i64,
+) -> Result<Option<SessionModel>, sqlx::Error> {
     let session = sqlx::query_as::<_, SessionModel>(
         r#"SELECT id, description, completed, date_start, last_date, session_data FROM game_session WHERE id = ?"#
     )
@@ -46,11 +52,15 @@ pub async fn get_session_by_id(pool: &SqlitePool, id: i64) -> Result<Option<Sess
     Ok(session)
 }
 
-pub async fn update_session(pool: &SqlitePool, id: i64, session: SessionModel) -> Result<(), sqlx::Error> {
+pub async fn update_session(
+    pool: &SqlitePool,
+    id: i64,
+    session: SessionModel,
+) -> Result<(), sqlx::Error> {
     sqlx::query(
         "UPDATE game_session
          SET description = ?, completed = ?, date_start = ?, last_date = ?, session_data = ?
-         WHERE id = ?"
+         WHERE id = ?",
     )
     .bind(&session.description)
     .bind(session.completed)

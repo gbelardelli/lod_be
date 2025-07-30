@@ -30,7 +30,7 @@ pub struct CharacterModel {
     pub comment: Option<String>,
     pub stats: Option<CharacterStats>,
     pub skills: Option<CharacterSkills>,
-    pub effects: Option<String>
+    pub effects: Option<String>,
 }
 
 impl From<web::Json<CharacterModel>> for CharacterModel {
@@ -55,7 +55,7 @@ pub struct CharacterPlayerRow {
     pub profession: String,
     pub name: String,
     pub level: i64,
-    pub experience: i64,    
+    pub experience: i64,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -67,7 +67,7 @@ pub struct CharacterStats {
     dexterity: i16,
     wisdom: i16,
     resolve: i16,
-    encumbrance: i16,    
+    encumbrance: i16,
     movement: i8,
     hp: i8,
     luck: i8,
@@ -75,7 +75,7 @@ pub struct CharacterStats {
     sanity: i8,
     weapon_class1: i8,
     weapon_class2: i8,
-    morale: i8,     // Morale che aggiunge al gruppo
+    morale: i8, // Morale che aggiunge al gruppo
     coin: i32,
 }
 
@@ -97,12 +97,12 @@ pub struct CharacterSkills {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Weapon {
     name: String,
-    slot: i8,           // 0 = Nothing, 1=Hand, 2=Shield, 3=Both
-    dmg: String,        // { "dice" : [{ "faces": 6, "roll": 1 }], "mod" : 7 }
+    slot: i8,    // 0 = Nothing, 1=Hand, 2=Shield, 3=Both
+    dmg: String, // { "dice" : [{ "faces": 6, "roll": 1 }], "mod" : 7 }
     wclass: i8,
     encumbrance: u8,
     special: String,
-    tot_dmg: String,    // { "dice" : [{ "faces": 6, "roll": 1 }], "mod" : 7 }
+    tot_dmg: String, // { "dice" : [{ "faces": 6, "roll": 1 }], "mod" : 7 }
     durability: i8,
 }
 

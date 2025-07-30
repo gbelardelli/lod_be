@@ -1,7 +1,7 @@
 use actix_web::web;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize,sqlx::FromRow)]
+#[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
 pub struct SessionModel {
     pub id: i64,
     pub description: String,

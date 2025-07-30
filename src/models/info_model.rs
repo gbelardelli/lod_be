@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-
-#[derive(Debug, Deserialize, Serialize,sqlx::FromRow)]
+#[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
 pub struct SpecieModel {
     pub id: i64,
     pub name: String,
@@ -10,7 +9,7 @@ pub struct SpecieModel {
     pub start_stats: String,
 }
 
-#[derive(Debug, Deserialize, Serialize,sqlx::FromRow)]
+#[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
 pub struct ProfessionModel {
     pub id: i64,
     pub name: String,
@@ -20,7 +19,7 @@ pub struct ProfessionModel {
     pub start_stats: String,
 }
 
-#[derive(Debug, Deserialize, Serialize,sqlx::FromRow)]
+#[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
 pub struct WeaponModel {
     pub id: i64,
     pub name: String,
@@ -33,7 +32,7 @@ pub struct WeaponModel {
     pub reload: i64,
 }
 
-#[derive(Debug, Deserialize, Serialize,sqlx::FromRow)]
+#[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
 pub struct InfoModel {
     pub species: Vec<SpecieModel>,
     pub professions: Vec<ProfessionModel>,

@@ -1,13 +1,16 @@
 #[cfg(test)]
 mod tests {
-    use crate::db::session_db::{create_session, delete_session, get_all_sessions, get_session_by_id, update_session};
+    use crate::db::session_db::{
+        create_session, delete_session, get_all_sessions, get_session_by_id, update_session,
+    };
     use crate::models::session_model::NewSessionData;
 
-    use sqlx::{SqlitePool, Executor};
+    use sqlx::{Executor, SqlitePool};
 
     async fn setup_db() -> SqlitePool {
         let pool = SqlitePool::connect(":memory:").await.unwrap();
-        pool.execute("
+        pool.execute(
+            "
             CREATE TABLE game_session (
                 id INTEGER PRIMARY KEY,
                 description VARCHAR NOT NULL,
@@ -16,7 +19,10 @@ mod tests {
                 last_date VARCHAR,
                 session_data TEXT NOT NULL
             );
-        ").await.unwrap();
+        ",
+        )
+        .await
+        .unwrap();
         pool
     }
 
@@ -49,10 +55,10 @@ mod tests {
         assert_eq!(fetched.id, id);
         assert_eq!(fetched.description, "T1");
 
-        let mut session=fetched;
-        session.description="T2".into();
+        let mut session = fetched;
+        session.description = "T2".into();
         let res = update_session(&pool, id, session).await.unwrap();
-        assert_eq!(res,());
+        assert_eq!(res, ());
         let fetched = get_session_by_id(&pool, id).await.unwrap().unwrap();
         assert_eq!(fetched.description, "T2");
     }
@@ -72,9 +78,8 @@ mod tests {
         assert_eq!(fetched.description, "T1");
 
         let res = delete_session(&pool, id).await.unwrap();
-        assert_eq!(res,());
+        assert_eq!(res, ());
         let fetched = get_session_by_id(&pool, id).await.unwrap();
         assert!(fetched.is_none());
-    }    
-
+    }
 }

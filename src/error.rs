@@ -51,7 +51,7 @@ impl ResponseError for AppError {
             AppError::Unauthorized(msg) => ErrorResponse {
                 error: "unauthorized".to_string(),
                 message: msg.clone(),
-            },            
+            },
         };
 
         let status_code = match self {

@@ -2,7 +2,6 @@ use sqlx::SqlitePool;
 
 use crate::models::info_model::{InfoModel, ProfessionModel, SpecieModel, WeaponModel};
 
-
 pub async fn get_all_info(pool: &SqlitePool) -> Result<InfoModel, sqlx::Error> {
     let species = sqlx::query_as!(
         SpecieModel,
@@ -38,7 +37,7 @@ pub async fn get_all_info(pool: &SqlitePool) -> Result<InfoModel, sqlx::Error> {
     let info = InfoModel {
         species,
         weapons,
-        professions
+        professions,
     };
 
     Ok(info)

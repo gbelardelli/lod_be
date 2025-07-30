@@ -1,13 +1,17 @@
 #[cfg(test)]
 mod tests {
- 
-    use sqlx::{SqlitePool, Executor};
 
-    use crate::{db::character_db::{create_character, get_character_by_id, update_character}, models::character_model::{CharacterSkills, NewCharacter}};
+    use sqlx::{Executor, SqlitePool};
+
+    use crate::{
+        db::character_db::{create_character, get_character_by_id, update_character},
+        models::character_model::{CharacterSkills, NewCharacter},
+    };
 
     async fn setup_db() -> SqlitePool {
         let pool = SqlitePool::connect(":memory:").await.unwrap();
-        pool.execute("
+        pool.execute(
+            "
             CREATE TABLE game_character (
                 id INTEGER PRIMARY KEY,
                 player_id INT NOT NULL,
@@ -22,7 +26,10 @@ mod tests {
                 skills TEXT DEFAULT '',
                 effects TEXT DEFAULT ''
             );
-        ").await.unwrap();
+        ",
+        )
+        .await
+        .unwrap();
         pool
     }
 
@@ -55,27 +62,27 @@ mod tests {
         assert_eq!(fetched.id, id);
         assert_eq!(fetched.name, "C1");
 
-        let mut character=fetched;
-        let skills = CharacterSkills { 
-            cs: 45, 
-            rs: 65, 
-            dodge: 33, 
-            pick_locks: 12, 
-            barter: 4, 
-            heal: 54, 
-            alchemy: 22, 
-            perception: 12, 
-            foraging: 51, 
-            prayers: -9999, 
-            arcane_arts: -9999
+        let mut character = fetched;
+        let skills = CharacterSkills {
+            cs: 45,
+            rs: 65,
+            dodge: 33,
+            pick_locks: 12,
+            barter: 4,
+            heal: 54,
+            alchemy: 22,
+            perception: 12,
+            foraging: 51,
+            prayers: -9999,
+            arcane_arts: -9999,
         };
         character.skills = Some(skills);
         let res = update_character(&pool, id, character).await.unwrap();
-        assert_eq!(res,());
+        assert_eq!(res, ());
         let fetched = get_character_by_id(&pool, id).await.unwrap().unwrap();
         assert!(fetched.skills.is_some());
-        let skills=fetched.skills.unwrap();
+        let skills = fetched.skills.unwrap();
         assert_eq!(skills.arcane_arts, -9999);
         assert_eq!(skills.cs, 45);
-    }    
+    }
 }
